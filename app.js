@@ -18,12 +18,39 @@ for (let btn of btns) {
 
 for (let Operator of operators) {
   Operator.addEventListener("click", () => {
-    theOperator = Operator.innerText;
-    display.innerText += theOperator;
-    prevNum = currNum;
-    currNum = "";
+    if (currNum !== "") {
+      theOperator = Operator.innerText;
+      display.innerText += theOperator;
+      prevNum = currNum;
+      currNum = "";
+    }
   });
 }
+
+document.addEventListener("keydown", (event) => {
+  const key = event.key;
+
+  if (!isNaN(key)) {
+    currNum += key;
+    display.innerText = currNum;
+  } else if (key === ".") {
+    if (!currNum.includes(".")) {
+      currNum += key;
+      display.innerText = currNum;
+    }
+  } else if (key === "/" || key === "*" || key === "-" || key === "+") {
+    if (currNum !== "") {
+      theOperator = key;
+      display.innerText += theOperator;
+      prevNum = currNum;
+      currNum = "";
+    }
+  } else if (key === "Enter") {
+    equals.click();
+  } else if (key === "Backspace") {
+    del.click();
+  }
+});
 
 function add(a, b) {
   return parseFloat(a) + parseFloat(b);
@@ -47,28 +74,30 @@ function divide(a, b) {
 
 equals.addEventListener("click", () => {
   let result;
+  if (prevNum === "" || currNum === "") return;
+
   switch (theOperator) {
     case "+":
       result = add(prevNum, currNum);
-      display.innerText = result;
-      currNum = result;
       break;
     case "-":
       result = sub(prevNum, currNum);
-      display.innerText = result;
-      currNum = result;
       break;
     case "*":
       result = mul(prevNum, currNum);
-      display.innerText = result;
-      currNum = result;
       break;
     case "/":
       result = divide(prevNum, currNum);
-      display.innerText = result;
-      currNum = result;
+      break;
+    default:
+      result = "Error";
       break;
   }
+
+  display.innerText = result;
+  currNum = result.toString();
+  prevNum = "";
+  theOperator = "";
 });
 
 clear.addEventListener("click", () => {
@@ -80,5 +109,5 @@ clear.addEventListener("click", () => {
 
 del.addEventListener("click", () => {
   currNum = currNum.slice(0, -1);
-  display.innerText = currNum;
+  display.innerText = currNum || 0;
 });
